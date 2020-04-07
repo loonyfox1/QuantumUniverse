@@ -20,5 +20,7 @@ int main(int argc, char** argv)
 	cout << endl << "Run BB84..." << endl;
 	universe->runBB84(n, inter);
 
+	universe->runBellsTheorem(1);
+
 }
 

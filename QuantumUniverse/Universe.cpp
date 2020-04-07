@@ -7,8 +7,10 @@ Universe::Universe() {
 }
 
 bool Universe::runBB84(long long n, bool intercept = Universe::generateRandomBinarySequence(1)[0]) {
-	Basis verticalBasis(vector <double> {1, 0}, vector <double> {0, 1}, "V");
-	Basis horizontalBasis (vector <double> {REV2ROOT, -REV2ROOT}, vector <double> {REV2ROOT, REV2ROOT}, "H");
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
+	Basis verticalBasis = createSpinBasis(0, "V");
+	Basis horizontalBasis = createSpinBasis(M_PI/2, "H"); 
 	vector <Basis> usedBases {verticalBasis, horizontalBasis};
 
 	Alice->setBases(usedBases);
@@ -19,7 +21,7 @@ bool Universe::runBB84(long long n, bool intercept = Universe::generateRandomBin
 	encodedKey = Eva->interceptKey(encodedKey, intercept);
 	Bob->decodeKey(encodedKey);
 
-	Alice->crossBasesSequence(Bob);
+	Alice->crossSequences(Bob, Alice->getBasesSequence(), Bob->getBasesSequence());
 	assert(*Alice->getBasesSequence() == *Bob->getBasesSequence());
 
 	bool result = false;
@@ -29,7 +31,7 @@ bool Universe::runBB84(long long n, bool intercept = Universe::generateRandomBin
 	else {
 		cout << "Eva intercepted. Compare binary messages..." << endl;
 
-		Alice->crossBinaryMessage(Bob);
+		Alice->crossSequences(Bob, Alice->getBinaryMessage(), Bob->getBinaryMessage());
 		assert(*Alice->getBinaryMessage() == *Bob->getBinaryMessage());
 	}
 	if (n <= 100) {
@@ -42,6 +44,31 @@ bool Universe::runBB84(long long n, bool intercept = Universe::generateRandomBin
 	long long m = Alice->getBinaryMessage()->size();
 	cout << endl << "Coincidences " << m << "/" << n << " = " << double(m) / double(n) << endl;
 	cout << "Does really Eva intercept? " << intercept << endl;
+
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+	cout << "It took me " << time_span.count() << " seconds." << endl;
+
+	return result;
+}
+
+bool Universe::runBellsTheorem(long long n) {
+	Basis verticalBasis = createSpinBasis(0, "V");
+	Basis rigthBasis = createSpinBasis(M_PI / 3., "R");
+	Basis leftBasis = createSpinBasis(M_PI / 3. * 4., "L");
+	vector <Basis> usedBases{ verticalBasis, rigthBasis, leftBasis };
+
+	Alice->setBases(usedBases);
+	Bob->setBases(usedBases);
+	Eva->setBases(usedBases);
+
+	return true;
+}
+
+Basis Universe::createSpinBasis(double theta, string name) {
+	double degree = theta / 2.;
+	Basis result(State(cos(degree), -sin(degree)), 
+				 State(sin(degree), cos(degree)), name);
 	return result;
 }
 

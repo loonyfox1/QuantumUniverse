@@ -9,49 +9,6 @@ void Character::setBases(const vector <Basis> bases) {
 	usedBases = bases;
 }
 
-void Character::crossBasesSequence(Character* pair) {
-	int i = 0;
-	auto basesSequenceBegin = basesSequence->begin();
-	auto binaryMessageBegin = binaryMessage->begin();
-	auto pairBasesSequenceBegin = pair->basesSequence->begin();
-	auto pairBinaryMessageBegin = pair->binaryMessage->begin();
-
-	while (basesSequenceBegin + i != basesSequence->end()) {
-		if ((*basesSequence)[i] != (*pair->basesSequence)[i]) {
-			basesSequence->erase(basesSequenceBegin + i);
-			binaryMessage->erase(binaryMessageBegin + i);
-			pair->basesSequence->erase(pairBasesSequenceBegin + i);
-			pair->binaryMessage->erase(pairBinaryMessageBegin + i);
-		}
-		else {
-			i++;
-		}
-
-		if (i == 0) {
-			basesSequenceBegin = basesSequence->begin();
-			binaryMessageBegin = binaryMessage->begin();
-			pairBasesSequenceBegin = pair->basesSequence->begin();
-			pairBinaryMessageBegin = pair->binaryMessage->begin();
-
-		}
-	}
-}
-
-void Character::crossBinaryMessage(Character* pair) {
-	int i = 0;
-	while (binaryMessage->begin() + i != binaryMessage->end()) {
-		if ((*binaryMessage)[i] != (*pair->binaryMessage)[i]) {
-			basesSequence->erase(basesSequence->begin() + i);
-			binaryMessage->erase(binaryMessage->begin() + i);
-			pair->basesSequence->erase(pair->basesSequence->begin() + i);
-			pair->binaryMessage->erase(pair->binaryMessage->begin() + i);
-		}
-		else {
-			i++;
-		}
-	}
-}
-
 vector <string>* Character::getBasesSequence() {
 	return basesSequence;
 }
